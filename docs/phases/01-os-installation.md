@@ -39,4 +39,16 @@ While Windows XP SP3 is historically significant, it presents insurmountable bar
 To reclaim system resources and provide a viable compilation environment, the system must be transitioned to a hyper-optimized, systemd-free 32-bit Linux distribution (antiX-26).
 
 ## The Gotchas
+
+### 1. The Hyper-Threading Discovery
+The BIOS audit revealed the Pentium 4 is a "Prescott" core featuring Hyper-Threading (HT) Technology. While physically a single-core CPU, it presents as two logical cores to the OS. This is a critical advantage for the AI compilation phase, as it will allow `llama.cpp` to utilize two threads instead of one.
+
+### 2. Legacy BIOS USB Priority
+The v2.51 BIOS does not feature a dedicated "USB Boot" category. Bootable USB drives are classified as generic hard disks.
+* **Solution:** To boot from USB, the drive must first be elevated to the #1 position within the `Hard Disk Drives` sub-menu before it can be selected as the primary boot device in the main Boot Priority sequence.
+
+### 3. The Ventoy / GRUB2 Failure
+Modern multiboot tools like Ventoy rely on GRUB2 payloads that the 2004 American Megatrends BIOS cannot correctly parse in legacy mode. Attempting to boot Ventoy results in a drop to a `grub>` rescue prompt rather than the intended boot menu.
+* **Solution:** Abandon multiboot tools. Flash the antiX ISO directly to the USB drive using Rufus, strictly enforcing an **MBR partition scheme** and **BIOS (non-UEFI)** target.
+
 ## The Outcome
