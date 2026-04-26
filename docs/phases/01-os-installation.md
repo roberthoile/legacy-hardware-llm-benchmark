@@ -51,4 +51,15 @@ The v2.51 BIOS does not feature a dedicated "USB Boot" category. Bootable USB dr
 Modern multiboot tools like Ventoy rely on GRUB2 payloads that the 2004 American Megatrends BIOS cannot correctly parse in legacy mode. Attempting to boot Ventoy results in a drop to a `grub>` rescue prompt rather than the intended boot menu.
 * **Solution:** Abandon multiboot tools. Flash the antiX ISO directly to the USB drive using Rufus, strictly enforcing an **MBR partition scheme** and **BIOS (non-UEFI)** target.
 
+### 4. CMOS Battery / Time Sync Errors
+During the live USB boot, logging in as root triggered a `unix_chkpwd` warning stating the "password changed in future." This is a symptom of a dead motherboard CMOS battery, causing the hardware clock to default to 2004 while the OS files are timestamped 2026. This requires NTP synchronization once networked to prevent compilation timestamp errors.
+
+### 5. `cli-installer` Auto-Partitioning Bypass
+The antiX text installer bypassed the "Auto-install" wizard for the legacy IDE drive, dropping the installation into the `cfdisk` manual partitioning utility.
+* **Solution:** Manually purged existing NTFS partitions, created a dedicated 4GB Swap partition (Type 82), allocated the remainder as a bootable Primary partition, and manually wrote the table to disk.
+
+### 6. Legacy GRUB Placement
+The installer defaults to installing the GRUB bootloader to the root partition. On a pre-UEFI American Megatrends BIOS, this results in an unbootable system.
+* **Solution:** GRUB must be explicitly installed to the **MBR (Master Boot Record)** of `/dev/sda` to successfully hand off the boot sequence.
+
 ## The Outcome
