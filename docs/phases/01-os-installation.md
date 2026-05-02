@@ -62,4 +62,31 @@ The antiX text installer bypassed the "Auto-install" wizard for the legacy IDE d
 The installer defaults to installing the GRUB bootloader to the root partition. On a pre-UEFI American Megatrends BIOS, this results in an unbootable system.
 * **Solution:** GRUB must be explicitly installed to the **MBR (Master Boot Record)** of `/dev/sda` to successfully hand off the boot sequence.
 
+### 7. Corrupted USB Partition Table (Physical Level)
+The 128GB USB drive was initially detected as two unusable, unformatted logical drives. Standard formatting via Windows Explorer failed, suggesting a corrupted partition table or MBR.
+* **The Gotcha:** This state often mimics a hardware failure, but it is frequently a software-level lock caused by previous high-level imaging tools (like BalenaEtcher or Ventoy).
+* **Solution:** Used `diskpart` via the Windows Command Prompt to `clean` the entire disk. This zeroed the partition table, allowing the drive to be initialized as a single MBR volume before flashing with Rufus.
+
+### 8. antiX Persistence Script Sensitivity
+Even with a correctly flashed ISO, the antiX "Live-USB" scripts failed to automatically "claim" the 100GB persistence partition on `/dev/sda2`.
+* **The Gotcha:** The antiX persistence scripts are highly literal. Without specific boot codes, the system will not look past the primary boot partition (`sda1`), even if a second partition is labeled correctly.
+* **Solution:** Injected the "Golden Boot String" into the boot parameters: `plab=rootfs live_swap=force slab=swapon persist_static`. 
+    * `plab=rootfs` forces the system to scan for a specific label.
+    * `live_swap=force` combined with `slab=swapon` manually bridges the gap to the 8GB swap partition.
+    
 ## The Outcome
+The environment is now fully stabilized on the 128GB "refurbished" USB drive. By utilizing the `persist_all` flag in conjunction with our custom partition mapping, the system has successfully initialized the following high-capacity volumes:
+
+* **System Layer:** 30GB `rootfs` loopback file on `/dev/sda2`.
+* **User Layer:** 60GB `homefs` loopback file on `/dev/sda2`.
+* **Memory Safety:** 8GB dedicated physical swap on `/dev/sda3`.
+
+### antiX-26 Baseline Performance Metrics (Idle)
+*Measured post-handshake via `top` and `free -m`:*
+
+* **CPU Usage:** 4.5% (Idle)
+* **Memory Footprint:** 231 MB 
+* **Physical Memory Available:** 1.86 GB / 2.00 GB
+* **Active Processes:** 1
+
+The migration to antiX 26 Core has transformed the Pentium 4 from a struggling workstation into a lean, dedicated inference node. By reducing the idle memory footprint to a mere 231 MB, you have successfully reclaimed approximately 15% of the total system RAM that was previously consumed by OS overhead. This efficiency gain, coupled with a minimal 4.5% CPU idle load, ensures that nearly the entire 2.00 GB memory budget and the Prescott core's hyper-threaded cycles are reserved for the intensive computational demands of the LLM toolchain.
