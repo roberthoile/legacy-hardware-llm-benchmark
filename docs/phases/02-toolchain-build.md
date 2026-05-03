@@ -51,8 +51,37 @@ The Pentium 4 "Prescott" architecture introduced **SSE3** instructions. To maxim
 We are targeting **llama.cpp** due to its minimal dependency tree and highly optimized CPU-only inference engine.
 
 ### Cloning Source
+To leverage the 60GB persistent volume and avoid crowding the system partition, the project was cloned into the `/home` directory.
+
 ```bash
-git clone [https://github.com/ggerganov/llama.cpp](https://github.com/ggerganov/llama.cpp)
+cd /home
+git clone [https://github.com/ggerganov/llama.cpp.git](https://github.com/ggerganov/llama.cpp.git)
 cd llama.cpp
 ```
 
+### Compilation
+The build was executed using two threads to utilize the Pentium 4's Hyper-Threading capability.
+
+Note: An initial path error occurred due to moving the directory from /root to /home after configuration. This was resolved by deleting the build directory and re-running cmake .. from the new location to update the absolute paths in CMakeCache.txt.
+
+```bash
+mkdir build && cd build
+cmake ..
+cmake --build . --config Release -j 2
+```
+
+## 4. Build Metrics & Verification
+The compilation completed successfully overnight, proving the stability of the persistent environment under high sustained load.
+
+### Resource Utilization (Peak Build)
+* Peak Swap Usage: ~11.6 MB (The 8GB physical swap partition on sda3 provided ample headroom).
+* CPU Behavior: Hyper-Threading successfully utilized 100% of the physical core via two logical threads. dmesg confirmed no thermal throttling or OOM events during the 6-8 hour build.
+* Build Time: originally estimated at 1 - 1.5 hours, triggered and ran overnight in under 8 hours
+
+### Post-Build Resource Footprint
+* Disk Impact: ~665 MB total (Source + Binaries) in /home/llama.cpp.
+* System Root Impact: Minimal (< 600 MB total used on the system partition).
+* Available Memory: ~1.78 GB available for inference (Post-build idle).
+
+### Binary Verification
+The build produced a functional llama-cli binary optimized for the i686 architecture with SSE3 support.
