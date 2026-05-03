@@ -94,3 +94,24 @@ cd bin
 ### Verification Output:
 * version: 9010 (d05fe1d7d)
 * built with GNU 14.2.0 for Linux i686
+
+## 5. Preliminary Performance Benchmark
+To establish a baseline for the toolchain's efficiency on the Prescott architecture, we measured the **Binary Initialization Overhead**. This establishes the "floor" of system latency before any model tensors are introduced.
+
+### Execution Command
+```bash
+time ./llama-cli --version
+```
+
+### Verification Output:
+* version: 9010 (d05fe1d7d)
+* built with GNU 14.2.0 for Linux i686
+* real  0m0.073s
+* user  0m0.061s
+* sys   0m0.012s
+
+### What to look for in the `time` output:
+* **Real:** The actual wall-clock time it took to run.
+* **User/Sys:** How much CPU time was spent in the logical threads.
+
+
