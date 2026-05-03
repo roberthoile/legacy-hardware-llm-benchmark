@@ -91,6 +91,6 @@ cd bin
 ./llama-cli --version
 ```
 
-# Verification Output:
-# version: 9010 (d05fe1d7d)
-# built with GNU 14.2.0 for Linux i686;
+### Verification Output:
+version: 9010 (d05fe1d7d)
+built with GNU 14.2.0 for Linux i686;
