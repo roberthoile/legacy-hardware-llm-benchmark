@@ -85,3 +85,12 @@ The compilation completed successfully overnight, proving the stability of the p
 
 ### Binary Verification
 The build produced a functional llama-cli binary optimized for the i686 architecture with SSE3 support.
+
+```bash
+cd bin
+./llama-cli --version
+```
+
+# Verification Output:
+# version: 9010 (d05fe1d7d)
+# built with GNU 14.2.0 for Linux i686;
