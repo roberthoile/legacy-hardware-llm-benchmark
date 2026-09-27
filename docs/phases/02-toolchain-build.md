@@ -45,6 +45,8 @@ The Pentium 4 "Prescott" architecture introduced **SSE3** instructions. To maxim
 * **Instruction Set:** SSE3, MMX, SSE, SSE2
 * **Optimization Level:** `-O3`
 
+**Note:** These targets were not passed as explicit compiler flags. The `cmake ..` invocation below intentionally uses llama.cpp's native-architecture auto-detection, which probes the local CPU and applies the correct `-march`/instruction-set flags (SSE3, in this case) without manual configuration.
+
 ---
 
 ## 3. Repository Setup & Build
@@ -55,7 +57,7 @@ To leverage the 60GB persistent volume and avoid crowding the system partition, 
 
 ```bash
 cd /home
-git clone [https://github.com/ggerganov/llama.cpp.git](https://github.com/ggerganov/llama.cpp.git)
+git clone https://github.com/ggerganov/llama.cpp.git
 cd llama.cpp
 ```
 

@@ -37,18 +37,17 @@ Running modern LLMs on this hardware presents three primary hurdles:
 ## 4. Implementation Stack
 * **OS:** antiX-26 (Core) - A systemd-free, 32-bit Debian-based Linux.
 * **Inference Engine:** `llama.cpp` (Custom 32-bit build with SSE3 flags).
-* **Model:** `TinyLlama-1.1B-Chat-v1.0` (GGUF, Q4_K_M quantization).
-* **Monitoring:** `htop` for RAM/Swap tracking; `lm-sensors` for thermal monitoring.
+* **Models:** `Qwen2.5-0.5B-Instruct`, `TinyLlama-1.1B-Chat-v1.0`, `SmolLM2-1.7B-Instruct` (GGUF, Q4_K_M quantization).
+* **Monitoring:** `htop` for RAM/Swap tracking.
 
 ---
 
 ## 5. Benchmarking Metrics
 This repository tracks and compares the following performance data:
 
-* **TTFT (Time to First Token):** Latency between the prompt and the start of the response.
-* **TPS (Tokens Per Second):** The sustained generation speed.
-* **Thermal Delta:** CPU temperature rise during 100% load on the Prescott core.
-* **VRAM vs System RAM:** Tracking the footprint in a non-GPU environment.
+* **PP (Prompt Processing):** Throughput while ingesting the prompt, in tokens/sec.
+* **TG (Token Generation):** Sustained generation speed, in tokens/sec.
+* **Wall Clock vs. CPU Time:** Real elapsed time against `user`+`sys` CPU time, used to confirm Hyper-Threading utilization and detect I/O-bound (swap) runs.
 
 ---
 
@@ -61,11 +60,11 @@ This repository tracks and compares the following performance data:
     ```
 3.  **Build Inference Engine:**
     ```bash
-    git clone [https://github.com/ggerganov/llama.cpp](https://github.com/ggerganov/llama.cpp)
+    git clone https://github.com/ggerganov/llama.cpp.git
     cd llama.cpp
     mkdir build && cd build
-    cmake .. -DLLAMA_NATIVE=OFF -DLLAMA_SSE3=ON
-    make
+    cmake ..
+    cmake --build . --config Release -j 2
     ```
 4.  **Download Model:**
     Place a 4-bit quantized GGUF model (e.g., TinyLlama 1.1B) into the `/models` directory.
